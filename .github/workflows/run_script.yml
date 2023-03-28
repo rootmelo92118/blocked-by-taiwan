@@ -13,6 +13,11 @@ jobs:
     name: Generate Domain List
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout rootmelo92118/blocked-by-taiwan
+        uses: actions/checkout@v3
+        with:
+          repository: rootmelo92118/blocked-by-taiwan
+          path: workspace
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
