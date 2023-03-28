@@ -1,0 +1,69 @@
+name: Convert V2Ray rules to AdGuard rules
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 21 * * *"
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**/README.md"
+jobs:
+  build:
+    name: Generate Domain List
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rootmelo92118/blocked-by-taiwan
+        uses: actions/checkout@v3
+        with:
+          repository: rootmelo92118/blocked-by-taiwan
+          path: workspace
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+        run: pip install requests beautifulsoup4
+      - name: Set variables
+        run: |
+          echo "RELEASE_NAME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "TAG_NAME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "VERSION_NUMBER=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+        shell: bash
+      - name: Generate plaintext and Convert to rules
+        run: |
+          cd workspace || exit 1
+          python3 domainListGenerator.py
+          mv blockedbytaiwan.txt ..
+          cd ../ && rm -rf workspace
+      - name: Git push assets to "release" branch
+        run: |
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b release
+          git add *.txt
+          git commit -m "${{ env.RELEASE_NAME }}"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f -u origin release
+          rm -rf .git
+      - name: Create a release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          body: |
+            Version :  ${{ env.VERSION_NUMBER }}
+          draft: false
+          prerelease: false
+      - name: Upload TXT file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./blockedbytaiwan.txt
+          asset_name: blockedbytaiwan.txt
+          asset_content_type: text/plain
