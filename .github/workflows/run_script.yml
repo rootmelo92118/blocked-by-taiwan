@@ -13,11 +13,6 @@ jobs:
     name: Generate Domain List
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout rootmelo92118/blocked-by-taiwan
-        uses: actions/checkout@v3
-        with:
-          repository: rootmelo92118/blocked-by-taiwan
-          path: workspace
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -32,7 +27,7 @@ jobs:
       - name: Generate plaintext and Convert to rules
         run: |
           cd workspace || exit 1
-          python3 domainListGenerator.py
+          python3 doaminListGenerator.py
           mv blockedbytaiwan.txt ..
           cd ../ && rm -rf workspace
       - name: Git push assets to "release" branch
