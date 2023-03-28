@@ -29,7 +29,7 @@ jobs:
           echo "TAG_NAME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
           echo "VERSION_NUMBER=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
         shell: bash
-      - name: Generate plaintext and Convert to rules
+      - name: Generate TXT file
         run: |
           cd workspace || exit 1
           python3 doaminListGenerator.py
