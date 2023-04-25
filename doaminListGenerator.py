@@ -2,8 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 soup = BeautifulSoup(requests.get("https://rpz.twnic.tw/e.html").text, "html.parser")
-datap = soup.find_all("tr")
-del datap[0]
+datap = soup.find_all("tr")[1:]
 data = ""
 for i in datap:
     data += i.find_all("td")[-2].text + "\n"
