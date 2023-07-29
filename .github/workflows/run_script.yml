@@ -60,12 +60,21 @@ jobs:
             Version :  ${{ env.VERSION_NUMBER }}
           draft: false
           prerelease: false
-      - name: Upload TXT file
+      - name: Upload RAW file
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./twnicRPZ1.0.txt
-          asset_name: /twnicRPZ1.0.txt
+          asset_name: twnicRPZ1.0.txt
+          asset_content_type: text/plain
+      - name: Upload AdGuardHome format file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./AdGuardHome/twnicRPZ1.0.txt
+          asset_name: twnicRPZ1.0.txt
           asset_content_type: text/plain
