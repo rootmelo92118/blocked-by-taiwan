@@ -32,8 +32,10 @@ jobs:
       - name: Generate TXT file
         run: |
           cd workspace || exit 1
+          mkdir AdGuardHome
           python3 domainListGenerator.py
           mv twnicRPZ1.0.txt ..
+          mv AdGuardHome ..
           cd ../ && rm -rf workspace
       - name: Git push assets to "release" branch
         run: |
