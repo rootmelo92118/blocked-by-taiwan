@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from bs4 import BeautifulSoup
 
 soup = BeautifulSoup(requests.get("https://rpz.twnic.tw/e.html").text, "html.parser")
@@ -14,4 +14,23 @@ with open("twnicRPZ1.0.txt","a") as f:
     f.close()
 with open("./AdGuardHome/twnicRPZ1.0.txt","a") as f:
     f.write(twnic_rpz_1_0_AdGuardHome)
+    f.close()
+
+plain_text = requests.get("https://od.moi.gov.tw/api/v1/rest/datastore/A01010000C-002150-013").text
+row_data = json.loads(plain_text)
+del row_data["result"]["records"][0]
+npa_rpz_row = ""
+npa_rpz_AdGuardHome = ""
+for i in row_data["result"]["records"]:
+    if "/" in i["WEBURL"]:
+        npa_rpz_row += i["WEBURL"].split("/")[0] + "\n"
+        npa_rpz_AdGuardHome += "||" + i["WEBURL"].split("/")[0] + "^\n"
+    else:
+        npa_rpz_row += i["WEBURL"] + "\n"
+        npa_rpz_AdGuardHome += "||" + i["WEBURL"] + "^\n"
+with open("165RPZ1.0.txt","a") as f:
+    f.write(npa_rpz_row)
+    f.close()
+with open("./AdGuardHome/twnicRPZ1.0.txt","a") as f:
+    f.write(npa_rpz_AdGuardHome)
     f.close()
