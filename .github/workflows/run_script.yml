@@ -34,6 +34,8 @@ jobs:
           cd workspace || exit 1
           mkdir AdGuardHome
           python3 doaminListGenerator.py
+          curl -L https://tw.fullaccesstointernet.cn.eu.org/RPZ/165RPZ.txt >> 165RPZ.txt
+          curl -L https://tw.fullaccesstointernet.cn.eu.org/RPZ/AdGuardHome/165RPZ.txt >> AdGuardHome/165RPZ.txt
           mv twnicRPZ1.0.txt ..
           mv 165RPZ.txt ..
           mv AdGuardHome ..
