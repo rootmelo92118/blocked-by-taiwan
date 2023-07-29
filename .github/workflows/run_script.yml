@@ -33,7 +33,8 @@ jobs:
         run: |
           cd workspace || exit 1
           python3 doaminListGenerator.py
-          mv blockedbytaiwan.txt ..
+          mv rpz1.0row.txt ..
+          mv rpz1.0AdGuardHome.txt ..
           cd ../ && rm -rf workspace
       - name: Git push assets to "release" branch
         run: |
@@ -41,7 +42,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b release
-          git add blockedbytaiwan.txt
+          git add *
           git commit -m "${{ env.RELEASE_NAME }}"
           git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
           git push -f -u origin release
@@ -64,6 +65,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./blockedbytaiwan.txt
-          asset_name: blockedbytaiwan.txt
+          asset_path: ./rpz1.0row.txt
+          asset_name: rpz1.0row.txt
           asset_content_type: text/plain
