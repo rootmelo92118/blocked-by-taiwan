@@ -32,9 +32,11 @@ jobs:
       - name: Generate TXT file
         run: |
           cd workspace || exit 1
+          mkdir AdGuardHome
           python3 doaminListGenerator.py
-          mv rpz1.0row.txt ..
-          mv rpz1.0AdGuardHome.txt ..
+          mv twnicRPZ1.0.txt ..
+          mv 165RPZ.txt ..
+          mv AdGuardHome ..
           cd ../ && rm -rf workspace
       - name: Git push assets to "release" branch
         run: |
@@ -65,6 +67,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./rpz1.0row.txt
-          asset_name: rpz1.0row.txt
+          asset_path: ./twnicRPZ1.0.txt
+          asset_name: /twnicRPZ1.0.txt
           asset_content_type: text/plain
