@@ -31,8 +31,8 @@ def NPA_165(source_url):
     try:
         raw_data = json.loads(raw.text)
         del raw_data["result"]["records"][0]
-        npa_rpz_raw = ""
-        npa_rpz_AdGuardHome = ""
+        npa_165_raw = ""
+        npa_165_AdGuardHome = ""
         for i in raw_data["result"]["records"]:
             if "/" in i["WEBURL"]:
                 npa_165_raw += i["WEBURL"].split("/")[0] + "\n"
