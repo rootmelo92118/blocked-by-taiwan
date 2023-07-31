@@ -22,7 +22,7 @@ def main():
         with open("./AdGuardHome/twnicRPZ1.0.txt","w") as f:
             f.write(twnic_rpz_1_0_AdGuardHome)
     except Exception as e:
-        logger.critical(e.message)
+        logger.critical(e)
         sys.exit(1)
 
 if __name__ == '__main__':
