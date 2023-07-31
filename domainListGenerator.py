@@ -3,7 +3,7 @@ import requests, json, logging, sys
 logger = logging.getLogger(__name__)
 
 def main():
-    raw = requests.get("https://rpz.twnic.tw/a.html")
+    raw = requests.get("https://rpz.twnic.tw/e.html")
     if raw.status_code != 200:
         logger.critical("Fetch data error.")
         sys.exit(1)
@@ -25,3 +25,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
