@@ -1,5 +1,4 @@
-import requests, json, logging
-from bs4 import BeautifulSoup
+import requests, json, logging, sys
 
 logger = logging.getLogger(__name__)
 
@@ -9,11 +8,10 @@ def main():
         logger.critical("Fetch data error.")
         sys.exit(1)
     try:
-        soup = BeautifulSoup(requests.get("https://rpz.twnic.tw/e.html").text, "html.parser")
-        exec(str(soup.find("script")).split(";")[0].split("const ")[1])
+        rpz_data = json.loads(raw.text.split('<script>')[1].split(';')[0].split('= ')[1])
         twnic_rpz_1_0_raw = ""
         twnic_rpz_1_0_AdGuardHome = ""
-        for i in rpzdata:
+        for i in rpz_data:
             for datap in i["domains"]:
                 twnic_rpz_1_0_raw += datap + "\n"
                 twnic_rpz_1_0_AdGuardHome += "||" + datap + "^\n"
