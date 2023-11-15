@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout rootmelo92118/blocked-by-taiwan
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rootmelo92118/blocked-by-taiwan
           path: workspace
