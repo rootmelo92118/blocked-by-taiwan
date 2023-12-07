@@ -33,7 +33,7 @@ jobs:
         run: |
           cd workspace || exit 1
           mkdir AdGuardHome
-          python3 domainListGenerator.py
+          python3 TWNICRPZdomainListGenerator.py.py
           mv twnicRPZ1.0.txt ..
           mv AdGuardHome ..
           cd ../ && rm -rf workspace
