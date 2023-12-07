@@ -46,4 +46,4 @@ def main(specified_ip_list,raw_filepath="./raw.txt",adguard_filepath="./adguard.
 
 
 if __name__ == '__main__':
-    main(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+    main(sys.argv[1],sys.argv[2]="./raw.txt",sys.argv[3]="./adguard.txt",sys.argv[4]="./adguard_rewrote.txt")
