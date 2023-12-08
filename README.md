@@ -4,5 +4,7 @@
 
 # 致謝
 - [FutaGuard@LowTechFilter](https://github.com/FutaGuard/LowTechFilter)
+- [FutaGuard@Honesty-Bun](https://github.com/FutaGuard/Honesty-Bun)
+
 # 關注數據
 [![Stargazers over time](https://starchart.cc/rootmelo92118/blocked-by-taiwan.svg)](https://starchart.cc/rootmelo92118/blocked-by-taiwanblocked-by-taiwan)
