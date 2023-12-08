@@ -37,7 +37,7 @@ jobs:
           python3 TWNICRPZdomainListGenerator.py
           cp twnicRPZ1.0.txt resourceData.txt
           curl -sSL $BLOCKED_BY_165 >> resourceData.txt
-          cat resourceData.txt | python3 domainScanner.py 34.102.218.71,150.242.101.120 ./blocked-by-taiwan.txt ./AdGuardHome/blocked-by-taiwan_AdGuard.txt ./AdGuardHome/blocked-by-taiwan_AdGuard_rewrote.txt 
+          python3 domainScanner.py resourceData.txt ./blocked-by-taiwan.txt ./AdGuardHome/blocked-by-taiwan_AdGuard.txt ./AdGuardHome/blocked-by-taiwan_AdGuard_rewrote.txt 
           mv blocked-by-taiwan.txt ..
           mv twnicRPZ1.0.txt ..
           mv AdGuardHome ..
