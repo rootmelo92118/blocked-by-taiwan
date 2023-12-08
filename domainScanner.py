@@ -81,7 +81,7 @@ class Bun:
                 logger.error(f'[FailedResolve] {domain}')
 
 
-async def main(source: str, raw: str = 'raw.txt', adguard: str = 'adguard.txt', adguard_rewrote: str = 'reworte.txt'):
+async def main(source: str, raw: str = './raw.txt', adguard: str = './adguard.txt', adguard_rewrote: str = './reworte.txt'):
     bun = Bun(raw=raw, adguard=adguard, adguard_rewrote=adguard_rewrote)
     filterlist: List[List[str]] = split_list(bun.get_filter_list(source))
     # tasking = []
