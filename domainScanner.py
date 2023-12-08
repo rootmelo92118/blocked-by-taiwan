@@ -1,49 +1,105 @@
-import dns.resolver, sys
+from typing import List
 
-def DNSQuery(my_resolver,domain_name,source_port=0):
-    try:
-        result = my_resolver.query(domain_name,source_port=source_port)   
-        if len(result.response.answer) == 1:
-            print(result.response.answer[0].to_text())
-            return result.response.answer[0].to_text().split(" ")
+import logging
+import dns.asyncresolver
+import dns.message
+import asyncio
+import pathlib
+import sys
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(message)s')
+logger = logging.getLogger(__name__)
+
+REDIRECT = {
+    '165': '34.102.218.71',
+    'TWNIC': '150.242.101.120'
+}
+
+
+def split_list(list_input) -> List[List[str]]:
+    output_list = []
+    for i in range(0, len(list_input), 5):
+        output_list.append(list_input[i:i + min(5, len(list_input) - i)])
+    return output_list
+
+
+class Checker:
+    def __init__(self, raw: str, adguard: str, adguard_rewrote: str):
+        self.raw_file = pathlib.Path(raw)
+        self.adguard_file = pathlib.Path(adguard)
+        self.rewrote_file = pathlib.Path(adguard_rewrote)
+        self.tmp: str = ''
+        if not self.raw_file.exists():
+            self.raw_file.touch()
+        if not self.adguard_file.exists():
+            self.adguard_file.touch()
+        if not self.rewrote_file.exists():
+            self.rewrote_file.touch()
+
+    def write(self, domain: str, ip: str):
+        self.tmp = self.raw_file.read_text() + f'{domain}\n'
+        self.raw_file.write_text(self.tmp)
+        self.tmp = self.adguard_file.read_text() + f'||{domain}^\n'
+        self.adguard_file.write_text(self.tmp)
+        self.tmp = self.rewrote_file.read_text() + f'||{domain}^$dnsrewrite=NOERROR;A;{ip}\n'
+        self.rewrote_file.write_text(self.tmp)
+        self.tmp = ''
+
+
+class Bun:
+    def __init__(self, cht_ip: str = '168.95.1.1', raw: str = './raw.txt', adguard: str = './adguard.txt', adguard_rewrote: str = './reworte.txt'):
+        self.cht_ip = cht_ip
+        self.check = Checker(raw, adguard, adguard_rewrote)
+        self.timedout: List[str] = []
+        # self.bad: List[str] = []
+
+    def get_filter_list(self, source: str = './source.txt') -> List[str]:
+        with pathlib.Path(source) as file:
+            if file.exists():
+                return file.read_text().splitlines()
+            else:
+                raise Exception('Failed to open source file!')
+
+    async def lookup(self, domain: str):
+        q = dns.message.make_query(domain, 'A')
+        try:
+            r: dns.message.Message = await dns.asyncquery.udp(q, self.cht_ip, timeout=5)
+        except dns.exception.Timeout:
+            self.timedout.append(domain)
+        except dns.query.BadResponse:
+            # self.bad.append(domain)
+            logger.error(f'[BadResponse] {domain}')
         else:
-            for i in result.response.answer:
-                print(i.to_text())
-                return None
-    except Exception as e:
-        print(domain_name + " Error: unable to start thread")
-        return None
-  
-def removeDomainWhichAreNoLongerBlocked(domain_list,specified_ip_list,source_port=0):
-    my_resolver = dns.resolver.Resolver()
-    my_resolver.nameservers = ["168.95.1.1"]
-    raw_list = ""
-    adguard_format = ""
-    adguard_format_include_rewrote_ip = ""
-    for i in domain_list:
-        dnsres = DNSQuery(my_resolver,i,source_port=source_port)
-        if dnsres != None and dnsres[4] in specified_ip_list:
-            raw_list += i+"\n"
-            adguard_format += "||"+i+"^\n"
-            adguard_format_include_rewrote_ip += "||"+i+"^$dnsrewrite=NOERROR;A;"+dnsres[4]+"\n"
-    return [raw_list,adguard_format,adguard_format_include_rewrote_ip]
+            if r.answer:
+                ip = r.answer[0].to_text().split(' ')[-1]
+                if ip in REDIRECT.values():
+                    logger.info(f'[Redirect] {domain}')
+                    self.check.write(f'{domain}', f'{ip}')
+                else:
+                    logger.error(f'[NotRedirect] {domain}')
+            else:
+                logger.error(f'[FailedResolve] {domain}')
 
-def main(specified_ip_list,raw_filepath="./raw.txt",adguard_filepath="./adguard.txt",adguard_rewrote_filename="./adguard_rewrote.txt"):
-    domain_list = []
-    for line in sys.stdin:
-        domain_list.append(line.strip("\n"))
-    specified_ip_list = specified_ip_list.split(",") if "," in specified_ip_list else specified_ip_list
-    data = removeDomainWhichAreNoLongerBlocked(domain_list=domain_list,specified_ip_list=specified_ip_list)
-    with open(raw_filepath,"w") as f:
-        f.write(data[0])
-        f.close()
-    with open(adguard_filepath,"w") as f:
-        f.write(data[1])
-        f.close()
-    with open(adguard_rewrote_filename,"w") as f:
-        f.write(data[2])
-        f.close()
+
+async def main(source: str, raw: str = 'raw.txt', adguard: str = 'adguard.txt', adguard_rewrote: str = 'reworte.txt'):
+    bun = Bun(raw=raw, adguard=adguard, adguard_rewrote=adguard_rewrote)
+    filterlist: List[List[str]] = split_list(await bun.get_filter_list(source))
+    # tasking = []
+
+    for bunch in filterlist:
+        tasking = [bun.lookup(e) for e in bunch]
+        await asyncio.gather(*tasking)
+
+    retries = 3
+    while bun.timedout and retries > 0:
+        logger.info(f'Retrying ... {retries}')
+        retrylist: List[List[str]] = split_list(bun.timedout)
+        bun.timedout = []
+        for domain in retrylist:
+            tasking = [bun.lookup(e) for e in domain]
+            await asyncio.gather(*tasking)
+        retries -= 1
 
 
 if __name__ == '__main__':
-    main(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+    asyncio.run(main(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]))
