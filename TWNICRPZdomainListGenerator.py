@@ -15,9 +15,9 @@ def main():
             for datap in i["domains"]:
                 twnic_rpz_1_0_raw += datap + "\n"
                 twnic_rpz_1_0_AdGuardHome += "||" + datap + "^\n"
-        with open("twnicRPZ1.0.txt","w") as f:
+        with open("./twnicRPZ1.0.txt","w") as f:
             f.write(twnic_rpz_1_0_raw)
-        with open("./AdGuardHome/twnicRPZ1.0.txt","w") as f:
+        with open("./AdGuardHome/twnicRPZ1.0AdGuard.txt","w") as f:
             f.write(twnic_rpz_1_0_AdGuardHome)
     except Exception as e:
         logger.critical(e)
