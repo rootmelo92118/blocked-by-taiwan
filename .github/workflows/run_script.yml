@@ -80,8 +80,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./AdGuardHome/twnicRPZ1.0.txt
-          asset_name: twnicRPZ1.0AdGuardHome.txt
+          asset_path: ./AdGuardHome/twnicRPZ1.0AdGuard.txt
+          asset_name: twnicRPZ1.0AdGuard.txt
           asset_content_type: text/plain
       - name: Upload Full RAW file
         uses: actions/upload-release-asset@v1
