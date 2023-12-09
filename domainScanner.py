@@ -66,6 +66,7 @@ class Bun:
             r: dns.message.Message = await dns.asyncquery.udp(q, self.cht_ip, timeout=5)
         except dns.exception.Timeout:
             self.timedout.append(domain)
+            logger.error(f'[Timeout] {domain}')
         except dns.query.BadResponse:
             # self.bad.append(domain)
             logger.error(f'[BadResponse] {domain}')
