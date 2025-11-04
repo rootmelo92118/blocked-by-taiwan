@@ -36,9 +36,10 @@ jobs:
           mkdir AdGuardHome
           touch resourceData.txt
           curl -sSL $BLOCKED_BY_165 >> resourceData.txt
-          python3 domainScanner.py resourceData.txt ./blocked-by-taiwan.txt ./AdGuardHome/blocked-by-taiwan_AdGuard.txt ./AdGuardHome/blocked-by-taiwan_AdGuard_rewrote.txt 
+          python3 domainScanner.py resourceData.txt ./blocked-by-taiwan.txt ./AdGuardHome/blocked-by-taiwan_AdGuard.txt ./AdGuardHome/blocked-by-taiwan_AdGuard_rewritten.txt ./timeout_domain.txt
           mv blocked-by-taiwan.txt ..
           mv AdGuardHome ..
+          mv timeout_domain.txt ..
           cd ../ && rm -rf workspace
       - name: Git push assets to "release" branch
         run: |
@@ -81,12 +82,21 @@ jobs:
           asset_path: ./AdGuardHome/blocked-by-taiwan_AdGuard.txt
           asset_name: blocked-by-taiwan_AdGuard.txt
           asset_content_type: text/plain
-      - name: Upload Rewrote Version AdGuardHome format file
+      - name: Upload Rewritten Version AdGuardHome format file
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./AdGuardHome/blocked-by-taiwan_AdGuard_rewrote.txt
+          asset_path: ./AdGuardHome/blocked-by-taiwan_AdGuard_rewritten.txt
           asset_name: blocked-by-taiwan_AdGuard_rewrote.txt
+          asset_content_type: text/plain
+      - name: Upload timeout domain file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./timeout_domain.txt
+          asset_name: timeout_domain.txt
           asset_content_type: text/plain
