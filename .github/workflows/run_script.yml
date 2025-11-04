@@ -28,7 +28,7 @@ jobs:
           echo "RELEASE_NAME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
           echo "TAG_NAME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
           echo "VERSION_NUMBER=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-          echo "BLOCKED_BY_165=https://filter.futa.gg/TW165-domains.txt" >> $GITHUB_ENV
+          echo "BLOCKED_BY_165=https://filter.futa.gg/TW165_domains.txt" >> $GITHUB_ENV
         shell: bash
       - name: Generate TXT file
         run: |
