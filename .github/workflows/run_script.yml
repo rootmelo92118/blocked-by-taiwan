@@ -91,7 +91,7 @@ jobs:
           asset_path: ./AdGuardHome/blocked-by-taiwan_AdGuard_rewritten.txt
           asset_name: blocked-by-taiwan_AdGuard_rewrote.txt
           asset_content_type: text/plain
-      - name: Upload timeout domain file
+      - name: Upload Timeout Domain file
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
