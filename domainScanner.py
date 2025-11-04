@@ -24,32 +24,32 @@ def split_list(list_input) -> List[List[str]]:
 
 
 class Checker:
-    def __init__(self, raw: str, adguard: str, adguard_rewrote: str):
+    def __init__(self, raw: str, adguard: str, adguard_rewrite: str):
         self.raw_file = pathlib.Path(raw)
         self.adguard_file = pathlib.Path(adguard)
-        self.rewrote_file = pathlib.Path(adguard_rewrote)
+        self.rewrite_file = pathlib.Path(adguard_rewrite)
         self.tmp: str = ''
         if not self.raw_file.exists():
             self.raw_file.touch()
         if not self.adguard_file.exists():
             self.adguard_file.touch()
-        if not self.rewrote_file.exists():
-            self.rewrote_file.touch()
+        if not self.rewrite_file.exists():
+            self.rewrite_file.touch()
 
     def write(self, domain: str, ip: str):
         self.tmp = self.raw_file.read_text() + f'{domain}\n'
         self.raw_file.write_text(self.tmp)
         self.tmp = self.adguard_file.read_text() + f'||{domain}^\n'
         self.adguard_file.write_text(self.tmp)
-        self.tmp = self.rewrote_file.read_text() + f'||{domain}^$dnsrewrite=NOERROR;A;{ip}\n'
-        self.rewrote_file.write_text(self.tmp)
+        self.tmp = self.rewrite_file.read_text() + f'||{domain}^$dnsrewrite=NOERROR;A;{ip}\n'
+        self.rewrite_file.write_text(self.tmp)
         self.tmp = ''
 
 
 class Bun:
-    def __init__(self, cht_ip: str = '168.95.1.1', raw: str = './raw.txt', adguard: str = './adguard.txt', adguard_rewrote: str = './reworte.txt'):
+    def __init__(self, cht_ip: str = '168.95.1.1', raw: str = './raw.txt', adguard: str = './adguard.txt', adguard_rewrite: str = './rewrite.txt'):
         self.cht_ip = cht_ip
-        self.check = Checker(raw, adguard, adguard_rewrote)
+        self.check = Checker(raw, adguard, adguard_rewrite)
         self.timedout: List[str] = []
         # self.bad: List[str] = []
 
@@ -82,8 +82,8 @@ class Bun:
                 logger.error(f'[FailedResolve] {domain}')
 
 
-async def main(source: str, raw: str = './raw.txt', adguard: str = './adguard.txt', adguard_rewrote: str = './reworte.txt'):
-    bun = Bun(raw=raw, adguard=adguard, adguard_rewrote=adguard_rewrote)
+async def main(source: str, raw: str = './raw.txt', adguard: str = './adguard.txt', adguard_rewrite: str = './rewrite.txt', timeout: str = './timeout.txt'):
+    bun = Bun(raw=raw, adguard=adguard, adguard_rewrite=adguard_rewrite)
     filterlist: List[List[str]] = split_list(bun.get_filter_list(source))
     # tasking = []
 
@@ -100,7 +100,16 @@ async def main(source: str, raw: str = './raw.txt', adguard: str = './adguard.tx
             tasking = [bun.lookup(e) for e in domain]
             await asyncio.gather(*tasking)
         retries -= 1
+        
+    timeout_file = pathlib.Path(timeout)
+    if not timeout_file.exists():
+        timeout_file.touch()
+    tmp = ''
+    for timeout_domain in bun.timedout:
+        tmp = tmp + f'{timeout_domain}\n'
+    timeout_file.write_text(tmp)
+    tmp = ''
 
 
 if __name__ == '__main__':
-    asyncio.run(main(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]))
+    asyncio.run(main(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4],sys.argv[5]))
