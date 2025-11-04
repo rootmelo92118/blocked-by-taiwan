@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 REDIRECT = {
     '165': '34.102.218.71',
-    'TWNIC': '150.242.101.120',
-    'unified_page': '182.173.0.181'
+    'TWNIC': '182.173.0.181'
 }
 
 
