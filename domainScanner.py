@@ -77,7 +77,7 @@ class Bun:
                     logger.info(f'[Redirect] {domain}')
                     self.check.write(f'{domain}', f'{ip}')
                 else:
-                    logger.error(f'[NotRedirect] {domain}')
+                    logger.error(f'[NotRedirect] {domain} {ip}')
             else:
                 logger.error(f'[FailedResolve] {domain}')
 
